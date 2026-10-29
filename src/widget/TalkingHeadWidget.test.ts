@@ -105,6 +105,26 @@ describe("the widget", () => {
     expect(q(w, ".hint").hidden).toBe(false);
   });
 
+  it("stays stopped when the visitor stops it while the clip is still loading", async () => {
+    let resolveFetch: ((r: unknown) => void) | null = null;
+    vi.stubGlobal("fetch", vi.fn((url: string) => new Promise((res) => {
+      resolveFetch = () => res({ ok: true, status: 200, url, text: async () => JSON.stringify(manifest) });
+    })));
+    const w = TalkingHeadWidget.mount({ clips: { welcome: "/welcome.clip.json" }, load: "eager" });
+    await ready(w);
+    q<HTMLButtonElement>(w, ".stage").click();
+    await flush();
+    expect(w.stats.state).toBe("loading");
+    q<HTMLButtonElement>(w, ".stage").click(); // stop, before the manifest arrives
+    expect(w.stats.state).toBe("idle");
+    resolveFetch!(null);
+    await flush();
+    await flush();
+    const audio = (w as unknown as { audio: HTMLMediaElement }).audio;
+    expect(w.stats.state).toBe("idle"); // the late manifest doesn't start the clip (or its sound)
+    expect(audio.src).toBe("");
+  });
+
   it("minimises to a launcher, remembers it, and stops", async () => {
     const w = TalkingHeadWidget.mount({ clips: { welcome: "/welcome.clip.json" }, load: "eager" });
     await ready(w);

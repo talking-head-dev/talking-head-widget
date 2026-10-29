@@ -167,6 +167,9 @@ export class TalkingHeadWidget {
   private onScreen = false;
   private minimised: boolean;
   private played = false;
+  /** bumped by every `play()` and every stop/pause during loading: an in-flight `play()` whose generation went
+   * stale drops its clip instead of starting it. */
+  private playSeq = 0;
   private firstFrame: number | null = null;
   private destroyed = false;
 
@@ -244,16 +247,18 @@ export class TalkingHeadWidget {
     this.played = true;
     this.ui.hint.hidden = true;
     void this.ensureLoaded();
+    const seq = ++this.playSeq;
     this.setState("loading");
     let clip: Clip;
     try {
       clip = await this.loadClip(clipId);
     } catch (cause) {
+      if (this.destroyed || seq !== this.playSeq) return; // stopped while loading: no clip, no error
       this.setState("idle");
       this.fail(cause);
       return;
     }
-    if (this.destroyed) return;
+    if (this.destroyed || seq !== this.playSeq) return; // stopped (or a newer play) while loading
     this.audio.pause();
     this.clip = clip;
     this.lines = this.options.captions ? captionLines(clip.words) : [];
@@ -264,7 +269,7 @@ export class TalkingHeadWidget {
     try {
       await this.audio.play();
     } catch (cause) {
-      if (this.destroyed) return;
+      if (this.destroyed || seq !== this.playSeq) return; // a pause interrupting play() also lands here
       this.clip = this.lip = null;
       this.setState("idle");
       if ((cause as DOMException)?.name === "NotAllowedError") {
@@ -276,11 +281,16 @@ export class TalkingHeadWidget {
   }
 
   pause(): void {
+    if (this.state === "loading") {
+      this.playSeq++; // nothing to pause yet: cancel the load instead of starting over it
+      this.setState("idle");
+    }
     this.audio.pause();
   }
 
   /** Stop the clip and go back to idling. */
   stop(): void {
+    this.playSeq++; // an in-flight play() drops its clip when it lands
     this.audio.pause();
     this.endClip();
   }
