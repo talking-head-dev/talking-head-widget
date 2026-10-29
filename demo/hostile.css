@@ -1,0 +1,28 @@
+/* An aggressive global stylesheet, as some sites have: the widget must look the same under it. */
+html { font-size: 31px !important; }
+* {
+  box-sizing: content-box !important;
+  margin: 7px !important;
+  padding: 9px !important;
+  border: 4px dashed #f0f !important;
+  font: italic 900 22px/3 "Comic Sans MS", cursive !important;
+  color: #0f0 !important;
+  background: #ff0 !important;
+  transform: rotate(4deg) !important;
+  opacity: 0.6 !important;
+  width: 50px !important;
+  height: 50px !important;
+  position: static !important;
+  display: inline !important;
+  filter: hue-rotate(90deg) !important;
+  visibility: visible !important;
+  text-transform: uppercase !important;
+  letter-spacing: 5px !important;
+}
+div, span, button, canvas, img, svg, p, section { display: block !important; float: left !important; }
+button { all: unset !important; }
+[hidden] { display: block !important; }
+body { width: auto !important; height: auto !important; display: block !important; transform: none !important;
+  opacity: 1 !important; filter: none !important; }
+html { width: auto !important; height: auto !important; display: block !important; transform: none !important;
+  opacity: 1 !important; filter: none !important; }

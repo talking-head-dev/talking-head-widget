@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A site with the widget: the ESM build</title>
+  <link rel="stylesheet" href="hostile.css" id="hostile">
+  <script>
+    if (new URLSearchParams(location.search).get("hostile") === "0") document.getElementById("hostile").remove();
+    window.CONTENT = `${location.protocol}//${location.hostname}:${Number(location.port) + 1}/`;
+  </script>
+  <!-- The ESM build imports three.js (a dependency): a bundler resolves it; a plain page maps it. -->
+  <script type="importmap">
+    { "imports": { "three": "/node_modules/three/build/three.module.js",
+                   "three/examples/jsm/": "/node_modules/three/examples/jsm/" } }
+  </script>
+</head>
+<body>
+  <h1>Acme Widgets</h1>
+  <p>The same page, with the widget imported as an ES module.</p>
+  <script type="module">
+    import { TalkingHeadWidget } from "/dist/widget.js";
+    const params = new URLSearchParams(location.search);
+    window.widget = TalkingHeadWidget.mount({
+      head: CONTENT + "head.glb",
+      clips: { welcome: CONTENT + "clips/" + (params.get("clip") || "segment-04") + ".clip.json" },
+      autoplay: params.get("autoplay") === "muted" ? "muted" : "on-click",
+      load: params.get("load") || "on-visible",
+    });
+  </script>
+</body>
+</html>
