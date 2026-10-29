@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>An inline widget far down a page</title>
+  <script>window.CONTENT = `${location.protocol}//${location.hostname}:${Number(location.port) + 1}/`;</script>
+</head>
+<body>
+  <p>Scroll down: the widget only renders while it's on screen.</p>
+  <div style="height: 3000px"></div>
+  <section id="slot" style="width: 200px; height: 200px"></section>
+  <script src="/dist/talking-head-widget.iife.js"></script>
+  <script>
+    window.widget = TalkingHeadWidget.mount({ head: CONTENT + "head.glb", position: "inline",
+      container: document.getElementById("slot"), load: "eager" });
+  </script>
+</body>
+</html>

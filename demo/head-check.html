@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Head check</title>
+  <!-- One head GLB at a size, posed by ARKit weights: compares a head with its web export (demo/check.mjs). -->
+  <style>html, body { margin: 0; background: #fff; } #view { width: 160px; height: 160px; }</style>
+  <script type="importmap">
+    { "imports": { "three": "/node_modules/three/build/three.module.js",
+                   "three/examples/jsm/": "/node_modules/three/examples/jsm/" } }
+  </script>
+</head>
+<body>
+  <div id="view"></div>
+  <script type="module">
+    import { TalkingHeadViewport } from "/dist/head.js";
+    const params = new URLSearchParams(location.search);
+    const view = document.getElementById("view");
+    view.style.width = view.style.height = `${params.get("size") || 160}px`;
+    const head = TalkingHeadViewport.attach(view, 0.8, { autoStart: false });
+    window.pose = (weights) => {
+      head.setDriver(() => ({ weights, pose: { yaw: 0, pitch: 0, roll: 0 } }));
+      head.draw();
+    };
+    head.load(params.get("glb")).then(() => {
+      window.pose({});
+      document.body.dataset.ready = String(head.drivableNames);
+    }, (e) => (document.body.dataset.error = String(e)));
+  </script>
+</body>
+</html>
