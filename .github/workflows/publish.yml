@@ -1,0 +1,48 @@
+name: Publish to npm
+
+# Publishes @talking-head/widget with npm trusted publishing (GitHub Actions
+# OIDC): no NPM_TOKEN secret is used. On npmjs.com the package's Trusted
+# Publisher must name this repository and this workflow file (publish.yml).
+# Provenance is automatic for trusted publishing (publishConfig.provenance).
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm >= 11.5.1.
+      - name: Update npm for trusted publishing
+        run: npm install -g npm@latest && npm --version
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Test
+        run: yarn test:run
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+      - name: Publish
+        run: npm publish --access public

@@ -1,8 +1,8 @@
 /**
- * `@talking-head-dev/widget`: an embeddable 3D talking head that plays clips made in the talking-head.dev studio.
+ * `@talking-head/widget`: an embeddable 3D talking head that plays clips made in the talking-head.dev studio.
  *
  * ```js
- * import { TalkingHeadWidget } from "@talking-head-dev/widget";
+ * import { TalkingHeadWidget } from "@talking-head/widget";
  * const head = TalkingHeadWidget.mount({ head: "/heads/eve.web.glb", clips: { welcome: "/clips/welcome.clip.json" } });
  * ```
  */
