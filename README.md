@@ -8,8 +8,8 @@ Part of the [talking-head.dev](https://github.com/talking-head-dev/talking-head.
 submodule. Design and measurements: the workspace's `docs/embeddable-widget.md`. Tracked in Jira as THS-20.
 
 **npm name:** `@talking-head/widget` (renamed in THS-25, once the user registered the `talking-head` org on npm).
-**Not yet published**: version `0.1.0` is prepared for a first public publish — see Publishing below. The licence
-is still `UNLICENSED` until the user picks one, so do not publish before that.
+**Not yet published**: version `0.1.0` is prepared for a first public publish under the MIT licence — see
+Publishing below.
 
 ## Embed it
 
@@ -107,14 +107,14 @@ is `.github/workflows/publish.yml`: on a GitHub Release (or a manual `workflow_d
 `yarn install --frozen-lockfile`, runs the tests, typecheck, lint and build, then `npm publish --access public`
 with `id-token: write`; provenance is automatic (`publishConfig.provenance`).
 
-First publish (user-side, THS-25): pick a licence and replace `UNLICENSED` in `package.json` first. Then publish
-`0.1.0` once by hand from a logged-in npm session (`npm login`, `yarn build`, `npm publish --access public`) —
-a Trusted Publisher can only be configured for a package that already exists. Afterwards, on npmjs.com open the
+First publish (THS-25): publish `0.1.0` once by hand from a logged-in npm session (`npm login`, `yarn build`,
+`npm publish --access public`) — a Trusted Publisher can only be configured for a package that already exists.
+Afterwards, on npmjs.com open the
 package's Settings → Trusted Publisher → GitHub Actions and enter organisation `talking-head-dev`, repository
 `talking-head-widget`, workflow filename `publish.yml`, environment blank. Later releases then need no token.
 
 ## Licenses
 
-The code is the workspace's (private for now). Heads made from ICT-FaceKit carry its MIT notice, and the IIFE build
+The code is MIT-licensed ([`LICENSE`](LICENSE)). Heads made from ICT-FaceKit carry its MIT notice, and the IIFE build
 bundles three.js (MIT): [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md), which goes with any copy of the package or
 a head it serves. A head made from photos of a real person needs that person's consent before it goes on another site.

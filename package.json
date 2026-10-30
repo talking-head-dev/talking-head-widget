@@ -2,7 +2,7 @@
   "name": "@talking-head/widget",
   "version": "0.1.0",
   "description": "An embeddable 3D talking head for any website, playing clips made in the talking-head.dev studio.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/talking-head-dev/talking-head-widget.git"
@@ -15,7 +15,7 @@
   },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "docs", "README.md", "THIRD_PARTY_NOTICES.md"],
+  "files": ["dist", "docs", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md"],
   "exports": {
     ".": {
       "talking-head-source": "./src/index.ts",
