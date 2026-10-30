@@ -1,12 +1,12 @@
 # talking-head-widget: the embeddable talking head
 
-An npm package (`@talking-head-dev/widget`, private, unpublished) that puts a 3D talking head in a corner of any
+An npm package (`@talking-head/widget`, prepared for a first public publish in THS-25) that puts a 3D talking head in a corner of any
 website and plays clips made in the talking-head.dev studio. Workspace overview: `../CLAUDE.md`; design and
 measurements: `../docs/embeddable-widget.md`; usage and commands: [`README.md`](README.md).
 
 ## What lives here
 - **The head modules** (`src/three/`, `src/lipsync/`, `src/performance/`, `src/blendshapes.ts`), moved here from the web
-  app in THS-20. `../talking-head-web` imports them from `@talking-head-dev/widget/head` and compiles these sources
+  app in THS-20. `../talking-head-web` imports them from `@talking-head/widget/head` and compiles these sources
   itself (a `link:` dependency and the `talking-head-source` export condition): **a change here is a change there**,
   so run the web app's checks too (`yarn test:run && yarn lint && yarn build` in `../talking-head-web`). Keep them
   free of anything but `three`.

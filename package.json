@@ -1,9 +1,18 @@
 {
-  "name": "@talking-head-dev/widget",
+  "name": "@talking-head/widget",
   "version": "0.1.0",
   "description": "An embeddable 3D talking head for any website, playing clips made in the talking-head.dev studio.",
   "license": "UNLICENSED",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talking-head-dev/talking-head-widget.git"
+  },
+  "homepage": "https://github.com/talking-head-dev/talking-head-widget#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "sideEffects": false,
   "files": ["dist", "docs", "README.md", "THIRD_PARTY_NOTICES.md"],
@@ -21,7 +30,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && vite build && vite build --mode iife",
+    "build": "vite build && vite build --mode iife && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "oxlint",
     "test": "vitest",

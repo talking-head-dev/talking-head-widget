@@ -1,5 +1,5 @@
 /**
- * `@talking-head-dev/widget/head`: **the head modules** without the widget around them: the viewport, the ARKit names
+ * `@talking-head/widget/head`: **the head modules** without the widget around them: the viewport, the ARKit names
  * and mixing rules, timelines and their player, the performance layer. The talking-head.dev web app imports these.
  */
 export * from "./blendshapes";
