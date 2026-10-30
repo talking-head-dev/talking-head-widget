@@ -8,8 +8,8 @@ Part of the [talking-head.dev](https://github.com/talking-head-dev/talking-head.
 submodule. Design and measurements: the workspace's `docs/embeddable-widget.md`. Tracked in Jira as THS-20.
 
 **npm name:** `@talking-head/widget` (renamed in THS-25, once the user registered the `talking-head` org on npm).
-**Not yet published**: version `0.1.0` is prepared for a first public publish under the MIT licence — see
-Publishing below.
+**Published**: `@talking-head/widget@0.1.0` is on npm under the MIT licence (first publish by hand in THS-25,
+2026-10-30); later releases publish from CI with trusted publishing — see Publishing below.
 
 ## Embed it
 
@@ -107,9 +107,8 @@ is `.github/workflows/publish.yml`: on a GitHub Release (or a manual `workflow_d
 `yarn install --frozen-lockfile`, runs the tests, typecheck, lint and build, then `npm publish --access public`
 with `id-token: write`; provenance is automatic (`publishConfig.provenance`).
 
-First publish (THS-25): publish `0.1.0` once by hand from a logged-in npm session (`npm login`, `yarn build`,
-`npm publish --access public`) — a Trusted Publisher can only be configured for a package that already exists.
-Afterwards, on npmjs.com open the
+First publish (THS-25, done 2026-10-30): `0.1.0` was published once by hand from a logged-in npm session — a
+Trusted Publisher can only be configured for a package that already exists. Remaining: on npmjs.com open the
 package's Settings → Trusted Publisher → GitHub Actions and enter organisation `talking-head-dev`, repository
 `talking-head-widget`, workflow filename `publish.yml`, environment blank. Later releases then need no token.
 
