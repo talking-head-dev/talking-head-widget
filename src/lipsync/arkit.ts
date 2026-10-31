@@ -95,6 +95,17 @@ export function mixFrame(lip: Weights, performance: Weights, speaking = speaking
   return out;
 }
 
+/**
+ * The value a head should show for one shape: clamped to 0..1, and `mouthClose` never above `jawOpen`. `mouthClose` is
+ * a corrective for an open jaw: it lifts the lower lip by about as much as `jawOpen` drops it (ICT-FaceKit: 3.8 against
+ * 3.5 cm), so on a closed jaw it pushes the lip up over the mouth to the nose. Lips are together at rest, so a bilabial
+ * on a closed jaw needs none of it. Every viewport writes its morph targets through this.
+ */
+export function shapeValue(weights: Weights, name: ArkitName): number {
+  const value = clamp01(weights[name] ?? 0);
+  return name === "mouthClose" ? Math.min(value, clamp01(weights.jawOpen ?? 0)) : value;
+}
+
 /** Add weight sets (clamped later by `mixFrame` or the viewport). */
 export function addWeights(...sets: Weights[]): Weights {
   const out: Weights = {};
