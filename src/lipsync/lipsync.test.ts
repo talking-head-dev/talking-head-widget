@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ARKIT_NAMES, EXPRESSIVE_MOUTH, FACE_NAMES, MOUTH_NAMES, SPEAKING_KEEP, addPose, mixFrame } from "./arkit";
+import { ARKIT_NAMES, EXPRESSIVE_MOUTH, FACE_NAMES, MOUTH_NAMES, SPEAKING_KEEP, addPose, mixFrame, shapeValue } from "./arkit";
 import { TIMELINE_FORMAT, TimelineFormatError, parseTimelineFile, toTimelineFile } from "./format";
 import { ManualClock, TimelinePlayer } from "./player";
 import { StreamTimeline, collectTimeline, emptyTimeline, frameWeights, resampleTimeline, sampleTimeline, timelineDuration,
@@ -11,6 +11,14 @@ const tl = (fps: number, values: number[]): ShapeTimeline => ({
 });
 
 describe("ARKit names and the mixing rules", () => {
+  it("never shows mouthClose above jawOpen, which would push the lip up to the nose on a closed jaw", () => {
+    expect(shapeValue({ mouthClose: 0.95 }, "mouthClose")).toBe(0);
+    expect(shapeValue({ mouthClose: 0.95, jawOpen: 0.2 }, "mouthClose")).toBeCloseTo(0.2);
+    expect(shapeValue({ mouthClose: 0.1, jawOpen: 0.2 }, "mouthClose")).toBeCloseTo(0.1);
+    expect(shapeValue({ jawOpen: 1.4 }, "jawOpen")).toBe(1);
+    expect(shapeValue({ mouthPressLeft: -0.2 }, "mouthPressLeft")).toBe(0);
+  });
+
   it("has the 52 ARKit names, split into mouth and face", () => {
     expect(ARKIT_NAMES).toHaveLength(52);
     expect(new Set(ARKIT_NAMES).size).toBe(52);

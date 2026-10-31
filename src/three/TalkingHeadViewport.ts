@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
 import { resolveCategory } from "../blendshapes";
-import { ARKIT_NAMES, ZERO_POSE, type Pose, type Weights } from "../lipsync/arkit";
+import { ARKIT_NAMES, ZERO_POSE, shapeValue, type ArkitName, type Pose, type Weights } from "../lipsync/arkit";
 import { createStudioLighting, type StudioLighting } from "./lighting";
 import { repairModelMaterials } from "./materials";
 
@@ -130,7 +130,7 @@ export class TalkingHeadViewport {
   apply(frame: HeadFrame): void {
     this.last = frame;
     for (const [name, list] of this.targets) {
-      const v = Math.min(1, Math.max(0, frame.weights[name as keyof Weights] ?? 0));
+      const v = shapeValue(frame.weights, name as ArkitName);
       for (const [mesh, index] of list) mesh.morphTargetInfluences![index] = v;
     }
     const d = THREE.MathUtils.degToRad;
