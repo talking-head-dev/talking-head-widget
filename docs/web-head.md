@@ -33,6 +33,10 @@ and sharp are JavaScript (Python has no maintained meshopt encoder); the encoder
 5. **Compress** (`EXT_meshopt_compression`, level medium). three's `GLTFLoader` decodes it with `MeshoptDecoder`
    (`TalkingHeadViewport` always sets it).
 
+A head with hair has a second mesh, `AvatarHair` (talking-head-avatar `avatar/hair.py`: a rigid shell with its own texture and
+no morph targets): the script finds the head by `extras.targetNames`, leaves the hair mesh whole, and the `--texture` cap applies to its
+texture too (a 2048 x 512 map becomes 512 x 128, so the curls blur; raise `--texture` for a closer head).
+
 The GLB keeps the interface the viewport relies on: the kept targets' names in `meshes[0].extras.targetNames`, the
 orientation and the scale. It adds `meshes[0].extras.arkitNames`, the ARKit names it can show, which the web app's
 coverage checker (`talking-head-web/docs/head-model/check-blendshape-coverage.mjs`) checks instead of all 51.
