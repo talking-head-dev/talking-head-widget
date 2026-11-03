@@ -34,8 +34,11 @@ and sharp are JavaScript (Python has no maintained meshopt encoder); the encoder
    (`TalkingHeadViewport` always sets it).
 
 A head with hair has a second mesh, `AvatarHair` (talking-head-avatar `avatar/hair.py`: a rigid shell with its own texture and
-no morph targets): the script finds the head by `extras.targetNames`, leaves the hair mesh whole, and the `--texture` cap applies to its
-texture too (a 2048 x 512 map becomes 512 x 128, so the curls blur; raise `--texture` for a closer head).
+no morph targets), and beside it 2-4 fur layers, `AvatarHairFur1..N` (offset shells with an alpha-cutout texture): the script
+finds the head by `extras.targetNames`, leaves the hair meshes whole, and caps their textures with `--hair-texture` (default
+1024: the 4096 x 1024 hair map becomes 1024 x 256, against the skin's `--texture` 512 — at the old single cap it shrank to
+512 x 128 and the curls blurred). The report's `hair` says which meshes rode along. In the viewport the fur keeps its
+cutout (`repairModelMaterials` counts `M_HairFur*` materials instead of flattening them to opaque).
 
 The GLB keeps the interface the viewport relies on: the kept targets' names in `meshes[0].extras.targetNames`, the
 orientation and the scale. It adds `meshes[0].extras.arkitNames`, the ARKit names it can show, which the web app's
