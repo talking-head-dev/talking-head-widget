@@ -129,7 +129,7 @@ try {
   const report = { output, bytes: bytes.byteLength, sizes, targets: kept.map(([n]) => n), arkit_names: shown,
     dropped: names.filter((n) => !keepTargets.has(n)), vertices: { before, after: vertices() },
     hair: hairMeshes.length ? { meshes: hairMeshes, fur_layers: hairMeshes.filter((n) => n.startsWith("AvatarHairFur")).length,
-      texture: hairTexture } : null };
+      cards: hairMeshes.includes("AvatarHairCards"), texture: hairTexture } : null };
   if (values.report) await writeFile(values.report, JSON.stringify(report, null, 2));
   process.stdout.write(JSON.stringify(report) + "\n");
 } catch (error) {

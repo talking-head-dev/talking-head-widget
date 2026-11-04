@@ -29,6 +29,8 @@ export interface MaterialRepairReport {
   albedosLifted: number;
   /** Hair fur materials (M_HairFur*, alpha cutout) kept as cutouts. */
   furMaterials: number;
+  /** Hair card materials (M_HairCards: talking-head-hair's cards) kept single-sided. */
+  cardMaterials: number;
 }
 
 /**
@@ -44,6 +46,7 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
     transmissionCleared: 0,
     albedosLifted: 0,
     furMaterials: 0,
+    cardMaterials: 0,
   };
 
   root.traverse((child: THREE.Object3D) => {
@@ -97,7 +100,16 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
 
       // The GLB is already doubleSided; belt-and-braces in case the OBJ import
       // flipped any normals, which would otherwise render those faces black.
-      m.side = THREE.DoubleSide;
+      // Except the hair cards (talking-head-hair, THS-38): each card comes in both
+      // windings with outward normals and is meant to be drawn single-sided; drawn
+      // double-sided, the back faces' normals flip inward and the cards facing away
+      // turn grey.
+      if (m.name.startsWith("M_HairCards")) {
+        m.side = THREE.FrontSide;
+        report.cardMaterials += 1;
+      } else {
+        m.side = THREE.DoubleSide;
+      }
       m.needsUpdate = true;
     });
 

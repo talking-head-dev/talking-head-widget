@@ -20,6 +20,17 @@ describe("repairModelMaterials and the hair fur", () => {
     expect(fur.transparent).toBe(false);   // cutout, not a blended transparent shell
   });
 
+  it("keeps the hair cards single-sided, their cutout and their vertex colours", () => {
+    const cards = new THREE.MeshStandardMaterial({ name: "M_HairCards", color: 0xffffff, vertexColors: true });
+    cards.alphaTest = 0.4;
+    cards.side = THREE.FrontSide;   // what GLTFLoader sets for doubleSided: false
+    const report = repairModelMaterials(modelWith(cards));
+    expect(report.cardMaterials).toBe(1);
+    expect(cards.side).toBe(THREE.FrontSide);
+    expect(cards.alphaTest).toBe(0.4);
+    expect(cards.vertexColors).toBe(true);
+  });
+
   it("still repairs an ordinary material as before", () => {
     const skin = new THREE.MeshPhysicalMaterial({ name: "M_Skin", color: 0xffffff });
     skin.transmission = 1;
