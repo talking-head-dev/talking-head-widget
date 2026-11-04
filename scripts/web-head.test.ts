@@ -75,4 +75,42 @@ describe("the head's web export", () => {
     writeFileSync(join(dir, "junk.glb"), "junk");
     expect(fail([join(dir, "junk.glb"), join(dir, "x.glb")])).toBe(1);
   });
+
+  it("carries the hair shell and fur through and caps their texture separately", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "web-head-hair-"));
+    await headGlb(join(dir, "head.glb"));
+    // Add a hair shell and one fur layer with an M_Hair* material and a texture.
+    const io0 = new NodeIO();
+    const doc = await io0.read(join(dir, "head.glb"));
+    const { default: sharp } = await import("sharp");
+    const raw = Buffer.from(Array.from({ length: 8 * 8 * 4 }, (_, i) => (i * 37) % 251));   // not a solid colour: prune keeps it
+    const png = await sharp(raw, { raw: { width: 8, height: 8, channels: 4 } }).png().toBuffer();
+    const texture = doc.createTexture().setImage(new Uint8Array(png)).setMimeType("image/png");
+    const base = doc.getRoot().listMeshes()[0].listPrimitives()[0];
+    const pos = base.getAttribute("POSITION")!;
+    const uvs = doc.createAccessor().setType("VEC2").setBuffer(pos.getBuffer())
+      .setArray(new Float32Array((pos.getArray() as Float32Array).filter((_, i) => i % 3 !== 2)));
+    for (const [meshName, matName] of [["AvatarHair", "M_Hair"], ["AvatarHairFur1", "M_HairFur1"]] as const) {
+      const material = doc.createMaterial(matName).setBaseColorTexture(texture);
+      if (matName.includes("Fur")) material.setAlphaMode("MASK").setAlphaCutoff(0.45);
+      const prim = doc.createPrimitive()
+        .setAttribute("POSITION", pos).setAttribute("TEXCOORD_0", uvs).setIndices(base.getIndices()).setMaterial(material);
+      doc.getRoot().listScenes()[0].addChild(doc.createNode(meshName).setMesh(doc.createMesh(meshName).addPrimitive(prim)));
+    }
+    writeFileSync(join(dir, "haired.glb"), await io0.writeBinary(doc));
+
+    const out = execFileSync(process.execPath, ["scripts/web-head.mjs", join(dir, "haired.glb"), join(dir, "web.glb"),
+      "--hair-texture", "64"], { encoding: "utf8" });
+    const report = JSON.parse(out);
+    expect(report.hair).toMatchObject({ fur_layers: 1, texture: 64 });
+    expect(report.hair.meshes).toEqual(expect.arrayContaining(["AvatarHair", "AvatarHairFur1"]));
+    expect(report.sizes.map((s: { step: string }) => s.step)).toContain("hair texture 64 webp");
+    await MeshoptDecoder.ready;
+    const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ "meshopt.decoder": MeshoptDecoder });
+    const web = await io.read(join(dir, "web.glb"));
+    expect(web.getRoot().listMeshes().map((m) => m.getName()))
+      .toEqual(expect.arrayContaining(["AvatarHair", "AvatarHairFur1"]));
+    const fur = web.getRoot().listMaterials().find((m) => m.getName() === "M_HairFur1");
+    expect(fur?.getAlphaMode()).toBe("MASK");
+  });
 });

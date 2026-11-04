@@ -26,7 +26,7 @@ import sharp from "sharp";
 import { resolveCategory } from "../src/blendshapes.ts";
 import { WEB_HEAD_NAMES } from "../src/webHead.ts";
 
-export const DEFAULTS = { ratio: 1, error: 0.0005, texture: 512, quality: 82 };
+export const DEFAULTS = { ratio: 1, error: 0.0005, texture: 512, hairTexture: 1024, quality: 82 };
 
 function usage(message) {
   process.stderr.write(`web-head: ${message}\n`);
@@ -39,6 +39,7 @@ const { values, positionals } = parseArgs({
     keep: { type: "string" },
     ratio: { type: "string" },
     texture: { type: "string" },
+    "hair-texture": { type: "string" },
     report: { type: "string" },
   },
 });
@@ -47,8 +48,10 @@ const [input, output] = positionals;
 const extra = (values.keep ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const ratio = values.ratio === undefined ? DEFAULTS.ratio : Number(values.ratio);
 const texture = values.texture === undefined ? DEFAULTS.texture : Number(values.texture);
+const hairTexture = values["hair-texture"] === undefined ? DEFAULTS.hairTexture : Number(values["hair-texture"]);
 if (!(ratio > 0 && ratio <= 1)) usage("--ratio must be in (0, 1]");
 if (!(texture >= 16 && texture <= 4096)) usage("--texture must be 16-4096");
+if (!(hairTexture >= 16 && hairTexture <= 4096)) usage("--hair-texture must be 16-4096");
 
 await MeshoptEncoder.ready;
 await MeshoptSimplifier.ready;
@@ -91,11 +94,28 @@ try {
     await measure(`decimate ${ratio}`, doc);
   }
 
-  // 3. A smaller texture, as WebP.
+  // 3. Smaller textures, as WebP. The hair shell's and its fur layers' textures (materials M_Hair*) keep more
+  // than the skin's cap: the 4096x1024 hair map at 512 read as mush in the corner head (THS-38).
+  const hairMeshes = doc.getRoot().listMeshes().map((m) => m.getName()).filter((n) => n.startsWith("AvatarHair"));
+  let hairTextures = 0;
+  for (const material of doc.getRoot().listMaterials()) {
+    if (!material.getName().startsWith("M_Hair")) continue;
+    const tex = material.getBaseColorTexture();
+    if (tex && !tex.getName().startsWith("hair")) { tex.setName(`hair-${hairTextures}`); hairTextures += 1; }
+  }
   if (doc.getRoot().listTextures().length) {
-    await doc.transform(textureCompress({ encoder: sharp, targetFormat: "webp", resize: [texture, texture],
-      quality: DEFAULTS.quality }));
-    await measure(`texture ${texture} webp`, doc);
+    if (hairTextures) {
+      await doc.transform(textureCompress({ encoder: sharp, targetFormat: "webp", resize: [texture, texture],
+        quality: DEFAULTS.quality, pattern: /^(?!hair-)/ }));
+      await measure(`texture ${texture} webp`, doc);
+      await doc.transform(textureCompress({ encoder: sharp, targetFormat: "webp", resize: [hairTexture, hairTexture],
+        quality: DEFAULTS.quality, pattern: /^hair-/ }));
+      await measure(`hair texture ${hairTexture} webp`, doc);
+    } else {
+      await doc.transform(textureCompress({ encoder: sharp, targetFormat: "webp", resize: [texture, texture],
+        quality: DEFAULTS.quality }));
+      await measure(`texture ${texture} webp`, doc);
+    }
   }
 
   // 4. Quantize to 16-bit (KHR_mesh_quantization), then 5. compress (EXT_meshopt_compression).
@@ -107,7 +127,9 @@ try {
   await writeFile(output, bytes);
 
   const report = { output, bytes: bytes.byteLength, sizes, targets: kept.map(([n]) => n), arkit_names: shown,
-    dropped: names.filter((n) => !keepTargets.has(n)), vertices: { before, after: vertices() } };
+    dropped: names.filter((n) => !keepTargets.has(n)), vertices: { before, after: vertices() },
+    hair: hairMeshes.length ? { meshes: hairMeshes, fur_layers: hairMeshes.filter((n) => n.startsWith("AvatarHairFur")).length,
+      cards: hairMeshes.includes("AvatarHairCards"), texture: hairTexture } : null };
   if (values.report) await writeFile(values.report, JSON.stringify(report, null, 2));
   process.stdout.write(JSON.stringify(report) + "\n");
 } catch (error) {

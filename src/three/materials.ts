@@ -27,6 +27,10 @@ export interface MaterialRepairReport {
   transmissionCleared: number;
   /** Materials whose albedo was lifted. */
   albedosLifted: number;
+  /** Hair fur materials (M_HairFur*, alpha cutout) kept as cutouts. */
+  furMaterials: number;
+  /** Hair card materials (M_HairCards: talking-head-hair's cards) kept single-sided. */
+  cardMaterials: number;
 }
 
 /**
@@ -41,6 +45,8 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
     meshes: 0,
     transmissionCleared: 0,
     albedosLifted: 0,
+    furMaterials: 0,
+    cardMaterials: 0,
   };
 
   root.traverse((child: THREE.Object3D) => {
@@ -70,6 +76,13 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
       m.transparent = false;
       m.opacity = 1;
 
+      // The hair's fur layers (THS-38): alpha-cutout shells, not glass and not opaque skin. Keep the cutout
+      // GLTFLoader set from alphaMode MASK (clearing it would draw solid offset husks round the hair).
+      if (m.name.startsWith("M_HairFur") || m.alphaTest > 0) {
+        if (!(m.alphaTest > 0)) m.alphaTest = 0.45;
+        report.furMaterials += 1;
+      }
+
       // --- ordinary matte, non-metallic shading so the lights read ---
       // A metal lit only by analytic lights with no environment map reads black,
       // so metalness stays at zero regardless of what the export asked for.
@@ -87,7 +100,16 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
 
       // The GLB is already doubleSided; belt-and-braces in case the OBJ import
       // flipped any normals, which would otherwise render those faces black.
-      m.side = THREE.DoubleSide;
+      // Except the hair cards (talking-head-hair, THS-38): each card comes in both
+      // windings with outward normals and is meant to be drawn single-sided; drawn
+      // double-sided, the back faces' normals flip inward and the cards facing away
+      // turn grey.
+      if (m.name.startsWith("M_HairCards")) {
+        m.side = THREE.FrontSide;
+        report.cardMaterials += 1;
+      } else {
+        m.side = THREE.DoubleSide;
+      }
       m.needsUpdate = true;
     });
 
