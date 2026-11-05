@@ -38,7 +38,9 @@ no morph targets), and beside it 2-4 fur layers, `AvatarHairFur1..N` (offset she
 finds the head by `extras.targetNames`, leaves the hair meshes whole, and caps their textures with `--hair-texture` (default
 1024: the 4096 x 1024 hair map becomes 1024 x 256, against the skin's `--texture` 512 — at the old single cap it shrank to
 512 x 128 and the curls blurred). The report's `hair` says which meshes rode along. In the viewport the fur keeps its
-cutout (`repairModelMaterials` counts `M_HairFur*` materials instead of flattening them to opaque).
+cutout (`repairModelMaterials` counts `M_HairFur*` materials instead of flattening them to opaque), and so does the
+shell's own `M_Hair` when its edge thins into strands (an RGBA texture with alpha MASK 0.5: any material with an
+`alphaTest` stays a cutout; the WebP keeps the alpha).
 
 The GLB keeps the interface the viewport relies on: the kept targets' names in `meshes[0].extras.targetNames`, the
 orientation and the scale. It adds `meshes[0].extras.arkitNames`, the ARKit names it can show, which the web app's
