@@ -102,15 +102,9 @@ change here is a change there: run its checks too (`yarn test:run && yarn lint &
 
 ## Publishing
 
-Releases publish from GitHub Actions with npm trusted publishing (OIDC) — no long-lived npm token. The workflow
-is `.github/workflows/publish.yml`: on a GitHub Release (or a manual `workflow_dispatch`) it installs with
-`yarn install --frozen-lockfile`, runs the tests, typecheck, lint and build, then `npm publish --access public`
-with `id-token: write`; provenance is automatic (`publishConfig.provenance`).
-
-First publish (THS-25, done 2026-10-30): `0.1.0` was published once by hand from a logged-in npm session — a
-Trusted Publisher can only be configured for a package that already exists. Remaining: on npmjs.com open the
-package's Settings → Trusted Publisher → GitHub Actions and enter organisation `talking-head-dev`, repository
-`talking-head-widget`, workflow filename `publish.yml`, environment blank. Later releases then need no token.
+Releases publish to npm from GitHub Actions with trusted publishing (`.github/workflows/publish.yml`, on a GitHub Release
+of this repository). How it works, the first publish and what still stands between a release and npm: the workspace's
+Blog, Libraries → Publishing the widget (`talking-head-web/src/views/blog/articles/libraries/publishing-the-widget.mdx`).
 
 ## Licenses
 
