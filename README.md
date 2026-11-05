@@ -5,7 +5,7 @@ chat bubble usually sits, and plays clips prepared in the talking-head.dev studi
 glances, with captions.
 
 Part of the [talking-head.dev](https://github.com/talking-head-dev/talking-head.dev) workspace, where it's a
-submodule. Design and measurements: the workspace's `docs/embeddable-widget.md`. Tracked in Jira as THS-20.
+submodule. Design and measurements: the workspace's Blog, The widget → the embeddable widget (`talking-head-web/src/views/blog/articles/widget/embeddable.mdx`). Tracked in Jira as THS-20.
 
 **npm name:** `@talking-head/widget` (renamed in THS-25, once the user registered the `talking-head` org on npm).
 **Published**: `@talking-head/widget@0.1.0` is on npm under the MIT licence (first publish by hand in THS-25,
@@ -102,15 +102,9 @@ change here is a change there: run its checks too (`yarn test:run && yarn lint &
 
 ## Publishing
 
-Releases publish from GitHub Actions with npm trusted publishing (OIDC) — no long-lived npm token. The workflow
-is `.github/workflows/publish.yml`: on a GitHub Release (or a manual `workflow_dispatch`) it installs with
-`yarn install --frozen-lockfile`, runs the tests, typecheck, lint and build, then `npm publish --access public`
-with `id-token: write`; provenance is automatic (`publishConfig.provenance`).
-
-First publish (THS-25, done 2026-10-30): `0.1.0` was published once by hand from a logged-in npm session — a
-Trusted Publisher can only be configured for a package that already exists. Remaining: on npmjs.com open the
-package's Settings → Trusted Publisher → GitHub Actions and enter organisation `talking-head-dev`, repository
-`talking-head-widget`, workflow filename `publish.yml`, environment blank. Later releases then need no token.
+Releases publish to npm from GitHub Actions with trusted publishing (`.github/workflows/publish.yml`, on a GitHub Release
+of this repository). How it works, the first publish and what still stands between a release and npm: the workspace's
+Blog, Libraries → Publishing the widget (`talking-head-web/src/views/blog/articles/libraries/publishing-the-widget.mdx`).
 
 ## Licenses
 

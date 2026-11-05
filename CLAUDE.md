@@ -2,7 +2,7 @@
 
 An npm package (`@talking-head/widget`, prepared for a first public publish in THS-25) that puts a 3D talking head in a corner of any
 website and plays clips made in the talking-head.dev studio. Workspace overview: `../CLAUDE.md`; design and
-measurements: `../docs/embeddable-widget.md`; usage and commands: [`README.md`](README.md).
+measurements: the workspace's Blog, The widget → the embeddable widget (`../talking-head-web/src/views/blog/articles/widget/embeddable.mdx`); usage and commands: [`README.md`](README.md).
 
 ## What lives here
 - **The head modules** (`src/three/`, `src/lipsync/`, `src/performance/`, `src/blendshapes.ts`), moved here from the web

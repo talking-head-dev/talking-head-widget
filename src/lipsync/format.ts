@@ -1,7 +1,8 @@
 /**
  * **The timeline JSON format, version 1**: how a `ShapeTimeline` travels between the server, the pipeline (H2 will
  * write it next to a studio segment's audio), files and this app (the dev route loads it; live mode can receive it).
- * Described in `docs/lipsync/timeline-format.md`.
+ * Described in the workspace's Blog, How the head moves → the interface and timelines
+ * (`talking-head-web/src/views/blog/articles/motion/performance-layer.mdx`).
  *
  * ```json
  * {

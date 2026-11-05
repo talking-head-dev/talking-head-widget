@@ -31,7 +31,7 @@ name, the version and the audio kinds against `src/clip.ts`.
 | `id` | yes | the clip's name (the server uses `segment-NN`) |
 | `duration` | yes | seconds of audio |
 | `audio` | yes | the audio, relative to the manifest's URL (or absolute): an object with `webm` (Opus in WebM) and/or `mp3`, or one URL string (its kind from the extension). The widget plays the first kind the browser can (`CLIP_AUDIO` order: webm, then mp3; Safari before 17 has no WebM). |
-| `timeline` | yes | the segment's `lipsync.json`: a `talking-head-timeline` v1 object, read by `parseTimelineFile` as is (the web app's `docs/lipsync/timeline-format.md`). Its own `audio` field is dropped on export. |
+| `timeline` | yes | the segment's `lipsync.json`: a `talking-head-timeline` v1 object, read by `parseTimelineFile` as is (the workspace's Blog, How the head moves → the interface and timelines: `talking-head-web/src/views/blog/articles/motion/performance-layer.mdx`). Its own `audio` field is dropped on export. |
 | `schedule` | no | the segment's `schedule.json` (`Performer.loadSchedule`): the base mood, emotes and looks with times on the audio's clock. The export drops the labeler's `quote` / `reason` and `skipped`. Missing or null: no emotions. |
 | `words` | no | each word's start and end (the segment's `words.json`, other fields dropped): the captions |
 | `text` | no | the segment's text: the accessible transcript (default: the words joined) |
