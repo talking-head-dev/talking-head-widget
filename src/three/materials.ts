@@ -31,6 +31,8 @@ export interface MaterialRepairReport {
   furMaterials: number;
   /** Hair card materials (M_HairCards: talking-head-hair's cards) kept single-sided. */
   cardMaterials: number;
+  /** Scalp cap materials (M_HairCap) whose deliberate darkness was left alone. */
+  capMaterials: number;
 }
 
 /**
@@ -47,6 +49,7 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
     albedosLifted: 0,
     furMaterials: 0,
     cardMaterials: 0,
+    capMaterials: 0,
   };
 
   root.traverse((child: THREE.Object3D) => {
@@ -91,9 +94,15 @@ export function repairModelMaterials(root: THREE.Object3D): MaterialRepairReport
       m.flatShading = false;
       m.envMapIntensity = 1;
 
+      // The scalp cap (M_HairCap, the hair shell's underside) is dark on purpose — roots in shadow,
+      // per-vertex local hair colour since Ears E3 (COLOR_0 under a white factor; older exports carry
+      // one dark factor). Lifting it to grey-brown made its inset edge a visible seam above the ear.
+      const isCap = m.name === "M_HairCap";
+      if (isCap) report.capMaterials += 1;
+
       // Lift very dark albedos (the irises export as 0.2 gray, the lashes as
       // pure black) so they stay legible instead of collapsing into black voids.
-      if (Math.max(m.color.r, m.color.g, m.color.b) < DARK_ALBEDO_THRESHOLD) {
+      if (!isCap && Math.max(m.color.r, m.color.g, m.color.b) < DARK_ALBEDO_THRESHOLD) {
         m.color = new THREE.Color(DARK_ALBEDO_REPLACEMENT);
         report.albedosLifted += 1;
       }

@@ -31,6 +31,17 @@ describe("repairModelMaterials and the hair fur", () => {
     expect(cards.vertexColors).toBe(true);
   });
 
+  it("keeps the scalp cap's dark colour and vertex colours (it is meant to be dark)", () => {
+    const cap = new THREE.MeshStandardMaterial({ name: "M_HairCap", color: 0xffffff, vertexColors: true });
+    const report = repairModelMaterials(modelWith(cap));
+    expect(report.capMaterials).toBe(1);
+    expect(cap.vertexColors).toBe(true);
+    expect(cap.color.getHex()).toBe(0xffffff);   // white factor over COLOR_0, untouched
+    const old = new THREE.MeshStandardMaterial({ name: "M_HairCap", color: new THREE.Color(0.03, 0.01, 0.005) });
+    repairModelMaterials(modelWith(old));
+    expect(old.color.r).toBeCloseTo(0.03);       // an old export's single dark colour is not lifted to grey-brown
+  });
+
   it("still repairs an ordinary material as before", () => {
     const skin = new THREE.MeshPhysicalMaterial({ name: "M_Skin", color: 0xffffff });
     skin.transmission = 1;
